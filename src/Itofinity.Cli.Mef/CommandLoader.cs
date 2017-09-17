@@ -1,4 +1,5 @@
-﻿using Itofinity.Cli.Mef.Configuration;
+﻿using Itofinity.Cli.Mef.Authentication;
+using Itofinity.Cli.Mef.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Composition.Convention;
@@ -24,8 +25,12 @@ namespace Itofinity.Cli.Mef
                 .ForTypesDerivedFrom<IAppConfiguration>()
                 .Export<IAppConfiguration>()
                 .Shared();
+            conventions
+                .ForTypesDerivedFrom<IAuthenticationAdapter>()
+                .Export<IAuthenticationAdapter>()
+                .Shared();
 
-            var assemblies = new[] { host };
+            var assemblies = new[] { host, Assembly.GetAssembly(typeof(PrimaryCommandLoader))};
 
             var configuration = new ContainerConfiguration()
                 .WithAssembliesInPath(extPath, conventions)

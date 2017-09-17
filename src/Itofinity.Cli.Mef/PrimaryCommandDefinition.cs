@@ -5,7 +5,7 @@ using Microsoft.Extensions.CommandLineUtils;
 
 namespace Itofinity.Cli.Mef
 {
-    public class PrimaryCommandDefinition : CommandDefinition, IPrimaryCommandDefinition
+    public abstract class PrimaryCommandDefinition : CommandDefinition, IPrimaryCommandDefinition
     {
         public PrimaryCommandDefinition(string name, IEnumerable<ICommandDefinition> subCommandDefinitions) : base(name, GetConfig(), subCommandDefinitions)
         {
