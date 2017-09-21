@@ -22,7 +22,7 @@ namespace Itofinity.Cli.Mef
         public static ContainerConfiguration WithAssembliesInPath(this ContainerConfiguration configuration, string path, AttributedModelProvider conventions, SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
             var assemblies = Directory
-                .GetFiles(path, "*.dll", searchOption)
+                .GetFiles(path, "Itofinity*.dll", searchOption)
                 .Select(AssemblyLoadContext.GetAssemblyName)
                 .Select(AssemblyLoadContext.Default.LoadFromAssemblyName)
                 .ToList();
