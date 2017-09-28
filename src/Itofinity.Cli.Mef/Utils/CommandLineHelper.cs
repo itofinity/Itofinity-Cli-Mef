@@ -16,5 +16,16 @@ namespace Itofinity.Cli.Mef.Utils
 
             return option.Value();
         }
+
+        public static string GetArgumentValue(CommandLineApplication config, string name)
+        {
+            var argument = config.Arguments.Where(a => a.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            if (argument == null)
+            {
+                return null;
+            }
+
+            return argument.Value;
+        }
     }
 }
