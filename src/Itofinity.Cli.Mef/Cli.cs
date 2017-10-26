@@ -8,7 +8,7 @@ namespace Itofinity.Cli.Mef
 {
     public class Cli
     {
-        public static void Run(string[] args, Assembly host)
+        public static void Run(string[] args, Assembly host, bool pauseOnExit = false)
         {
             var app = new Microsoft.Extensions.CommandLineUtils.CommandLineApplication();
 
@@ -24,12 +24,18 @@ namespace Itofinity.Cli.Mef
 
             app.HelpOption("-? | -h | --help");
 
+            if(!args.Any())
+            {
+                args = new string[] { "--help" };
+            }
             var result = app.Execute(args);
 
-#if DEBUG
-            Console.WriteLine("Hit Return to exit.");
-            Console.ReadLine();
-#endif
+            if (pauseOnExit)
+            {
+                Console.WriteLine("Hit Return to exit.");
+                Console.ReadLine();
+            }
+
             Environment.Exit(result);
         }
     }
