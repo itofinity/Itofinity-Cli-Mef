@@ -12,7 +12,7 @@ namespace Itofinity.Cli.Mef
         {
             var app = new Microsoft.Extensions.CommandLineUtils.CommandLineApplication();
 
-            var primaryCommands = PrimaryCommandLoader.Load(host, ".");
+            var primaryCommands = ComponentLoader.Load(host, ".");
 
             primaryCommands.ToList().ForEach(pc =>
             {
