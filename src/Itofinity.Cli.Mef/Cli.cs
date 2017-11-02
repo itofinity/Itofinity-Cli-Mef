@@ -8,11 +8,11 @@ namespace Itofinity.Cli.Mef
 {
     public class Cli
     {
-        public static void Run(string[] args, Assembly host, bool pauseOnExit = false)
+        public static void Run(string[] args, Assembly host, string extPath = "", string extPattern = "*", bool pauseOnExit = false)
         {
             var app = new Microsoft.Extensions.CommandLineUtils.CommandLineApplication();
 
-            var primaryCommands = PrimaryCommandLoader.Load(host, ".");
+            var primaryCommands = PrimaryCommandLoader.Load(host, extPath, extPattern);
 
             primaryCommands.ToList().ForEach(pc =>
             {

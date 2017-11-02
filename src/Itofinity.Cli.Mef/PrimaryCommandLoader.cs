@@ -3,18 +3,23 @@ using Itofinity.Cli.Mef.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Composition.Convention;
+using System.Composition.Hosting;
 using System.Reflection;
 
 namespace Itofinity.Cli.Mef
 {
-    public class PrimaryCommandLoader : ComponentLoader
+    public class PrimaryCommandLoader
     {
-        public static IEnumerable<IPrimaryCommandDefinition> Load(Assembly host, string extPath)
+        public static IEnumerable<ICommandDefinition> Load(Assembly host, string extPath, string extPattern)
         {
             var conventions = new ConventionBuilder();
             conventions
                 .ForTypesDerivedFrom<IPrimaryCommandDefinition>()
                 .Export<IPrimaryCommandDefinition>()
+                .Shared();
+            conventions
+                .ForTypesDerivedFrom<ISecondaryCommandDefinition>()
+                .Export<ISecondaryCommandDefinition>()
                 .Shared();
             conventions
                 .ForTypesDerivedFrom<IRestConfiguration>()
@@ -29,7 +34,22 @@ namespace Itofinity.Cli.Mef
                 .Export<IAuthenticationAdapter>()
                 .Shared();
 
-            return Load(host, extPath, conventions);
+            return Load(host, extPath, extPattern, conventions);
+        }
+
+        public static IEnumerable<ICommandDefinition> Load(Assembly host, string extPath, string extPattern, ConventionBuilder conventions)
+        {
+            var assemblies = new[] { host};
+
+            var configuration = new ContainerConfiguration()
+                .WithAssembliesInPath(extPath, extPattern, conventions, System.IO.SearchOption.AllDirectories)
+                .WithAssemblies(assemblies, conventions);
+
+            using (var container = configuration.CreateContainer())
+            {
+                var commands = container.GetExports<IPrimaryCommandDefinition>();
+                return commands;
+            }
         }
     }
 }
