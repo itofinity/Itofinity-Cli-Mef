@@ -19,17 +19,9 @@ deploy:
   api_key:
     secure: qTIvhxyMmoK96PQjCdn6o1hzwsc9vivjNpmbQ9s/xnqpKrnQVAxRTa0gK5VQ3yGs
   artifact: Package
-on_success:
-  - git config --global credential.helper store
-  - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:github_access_token):x-oauth-basic@github.com`n"
-  - git config --global user.email "itofinity-cli-mef@ci.appveyor.com"
-  - git config --global user.name "itofinity-cli-mef ci.appveyor"
-  - ps: git tag $Env:APPVEYOR_BUILD_VERSION
-  - git push --tags
-deploy:
+- provider: GitHub
   release: $(APPVEYOR_PROJECT_NAME)-v$(appveyor_build_version)
   description: 'CI Release'
-  provider: GitHub
   auth_token: 
     secure: $(github_access_token) # your encrypted token from GitHub
   artifact: /.*\.nupkg/            # upload all NuGet packages to release assets
@@ -37,3 +29,10 @@ deploy:
   prerelease: true
   on:
     branch: master   
+on_success:
+  - git config --global credential.helper store
+  - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:github_access_token):x-oauth-basic@github.com`n"
+  - git config --global user.email "itofinity-cli-mef@ci.appveyor.com"
+  - git config --global user.name "itofinity-cli-mef ci.appveyor"
+  - ps: git tag $Env:APPVEYOR_BUILD_VERSION
+  - git push --tags  
