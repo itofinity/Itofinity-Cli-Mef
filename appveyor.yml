@@ -1,0 +1,15 @@
+version: 0.1.{build}
+image: Visual Studio 2017 Preview
+build_script:
+- ps: >-
+    nuget restore
+
+    dotnet build /p:Version=$Env:APPVEYOR_BUILD_VERSION
+artifacts:
+- path: src\Itofinity.Cli.Mef\bin\Debug\*.nupkg
+  name: Package
+deploy:
+- provider: NuGet
+  api_key:
+    secure: qTIvhxyMmoK96PQjCdn6o1hzwsc9vivjNpmbQ9s/xnqpKrnQVAxRTa0gK5VQ3yGs
+  artifact: Package
