@@ -1,4 +1,5 @@
 version: 0.2.{build}-ALPHA
+skip_tags: true
 image: Visual Studio 2017 Preview
 environment:
   github_access_token:
