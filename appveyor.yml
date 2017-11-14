@@ -26,3 +26,14 @@ on_success:
   - git config --global user.name "itofinity-cli-mef ci.appveyor"
   - ps: git tag $Env:APPVEYOR_BUILD_VERSION
   - git push --tags
+deploy:
+  release: $(APPVEYOR_PROJECT_NAME)-v$(appveyor_build_version)
+  description: 'CI Release'
+  provider: GitHub
+  auth_token: 
+    secure: $(github_access_token) # your encrypted token from GitHub
+  artifact: /.*\.nupkg/            # upload all NuGet packages to release assets
+  draft: true
+  prerelease: true
+  on:
+    branch: master   
