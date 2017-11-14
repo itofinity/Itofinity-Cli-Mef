@@ -1,5 +1,8 @@
 version: 0.2.{build}-ALPHA
 image: Visual Studio 2017 Preview
+environment:
+  github_access_token:
+    secure: goOlUHXLAwoZzDBjQLIDVMPJlsSwXcxKE/ulw4qrmZRyvMwOi37SOHCP6a2ADqMY
 build_script:
 - ps: >-
     nuget restore
@@ -13,3 +16,11 @@ deploy:
   api_key:
     secure: qTIvhxyMmoK96PQjCdn6o1hzwsc9vivjNpmbQ9s/xnqpKrnQVAxRTa0gK5VQ3yGs
   artifact: Package
+on_success:
+  - git config --global credential.helper store
+  - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:github_access_token):x-oauth-basic@github.com`n"
+  - git config --global user.email "itofinity-cli-mef@ci.appveyor.com"
+  - git config --global user.name "itofinity-cli-mef ci.appveyor"
+  - git commit 
+  - git tag $Env:APPVEYOR_BUILD_VERSION
+  - git push
