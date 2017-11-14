@@ -1,4 +1,4 @@
-version: 0.1.{build}
+version: 0.2.{build}-ALPHA
 image: Visual Studio 2017 Preview
 build_script:
 - ps: >-
