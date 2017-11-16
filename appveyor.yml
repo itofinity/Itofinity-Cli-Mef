@@ -3,7 +3,7 @@ skip_tags: true
 image: Visual Studio 2017 Preview
 environment:
   github_access_token:
-    secure: goOlUHXLAwoZzDBjQLIDVMPJlsSwXcxKE/ulw4qrmZRyvMwOi37SOHCP6a2ADqMY
+    secure: MvIdJbnvR3JUstzeWq9cCJqUoWH1d3t3m5pxpktdV1GafjR/C7fBmxMd5R+xx4Pt
 build_script:
 - ps: >-
     nuget update -self
@@ -23,7 +23,7 @@ deploy:
   release: $(APPVEYOR_PROJECT_NAME)-v$(appveyor_build_version)
   description: 'CI Release'
   auth_token: 
-    secure: $(github_access_token) # your encrypted token from GitHub
+    secure: MvIdJbnvR3JUstzeWq9cCJqUoWH1d3t3m5pxpktdV1GafjR/C7fBmxMd5R+xx4Pt # your encrypted token from GitHub
   artifact: /.*\.nupkg/            # upload all NuGet packages to release assets
   draft: true
   prerelease: true
