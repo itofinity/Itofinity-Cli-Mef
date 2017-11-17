@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Itofinity.Cli.Mef.Command;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -12,7 +13,16 @@ namespace Itofinity.Cli.Mef
         {
             var app = new Microsoft.Extensions.CommandLineUtils.CommandLineApplication();
 
-            var primaryCommands = PrimaryCommandLoader.Load(host, extPath, extPattern);
+            var primaryCommands = new List<ICommandDefinition>();
+            var loadedCommands = PrimaryCommandLoader.Load(host, extPath, extPattern);
+
+            // add default commmands
+            if(!loadedCommands.Any(pc => pc.Name.Equals("version", StringComparison.InvariantCultureIgnoreCase)))
+            {
+                primaryCommands.Add(new VersionPrimaryCommand());
+            }
+
+            primaryCommands.AddRange(loadedCommands);
 
             primaryCommands.ToList().ForEach(pc =>
             {
@@ -28,7 +38,17 @@ namespace Itofinity.Cli.Mef
             {
                 args = new string[] { "--help" };
             }
-            var result = app.Execute(args);
+
+            int result = 0;
+            try
+            {
+                result = app.Execute(args);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                result = app.Execute(new string[] { "--help" });
+            }
 
             if (pauseOnExit)
             {
