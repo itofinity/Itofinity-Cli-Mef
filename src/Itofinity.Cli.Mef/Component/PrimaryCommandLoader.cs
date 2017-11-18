@@ -6,11 +6,18 @@ using System.Composition.Convention;
 using System.Composition.Hosting;
 using System.Reflection;
 
-namespace Itofinity.Cli.Mef
+namespace Itofinity.Cli.Mef.Component
 {
-    public class PrimaryCommandLoader
+    public class PrimaryCommandLoader : ComponentLoader
     {
         public static IEnumerable<ICommandDefinition> Load(Assembly host, string extPath, string extPattern)
+        {
+            ConventionBuilder conventions = PrimaryCommandConventions();
+
+            return Load(host, extPath, extPattern, conventions);
+        }
+
+        private static ConventionBuilder PrimaryCommandConventions()
         {
             var conventions = new ConventionBuilder();
             conventions
@@ -33,23 +40,8 @@ namespace Itofinity.Cli.Mef
                 .ForTypesDerivedFrom<IAuthenticationAdapter>()
                 .Export<IAuthenticationAdapter>()
                 .Shared();
-
-            return Load(host, extPath, extPattern, conventions);
+            return conventions;
         }
 
-        public static IEnumerable<ICommandDefinition> Load(Assembly host, string extPath, string extPattern, ConventionBuilder conventions)
-        {
-            var assemblies = new[] { host};
-
-            var configuration = new ContainerConfiguration()
-                .WithAssembliesInPath(extPath, extPattern, conventions, System.IO.SearchOption.AllDirectories)
-                .WithAssemblies(assemblies, conventions);
-
-            using (var container = configuration.CreateContainer())
-            {
-                var commands = container.GetExports<IPrimaryCommandDefinition>();
-                return commands;
-            }
-        }
     }
 }

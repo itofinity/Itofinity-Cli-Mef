@@ -1,6 +1,8 @@
 ﻿using Itofinity.Cli.Mef.Command;
+using Itofinity.Cli.Mef.Component;
 using System;
 using System.Collections.Generic;
+using System.Composition.Convention;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -16,13 +18,28 @@ namespace Itofinity.Cli.Mef
             var primaryCommands = new List<ICommandDefinition>();
             var loadedCommands = PrimaryCommandLoader.Load(host, extPath, extPattern);
 
+            Run(args, pauseOnExit, app, primaryCommands, loadedCommands);
+        }
+
+        public static void Run(string[] args, Assembly host, ConventionBuilder conventions, string extPath = "", string extPattern = "*", bool pauseOnExit = false)
+        {
+            var app = new Microsoft.Extensions.CommandLineUtils.CommandLineApplication();
+
+            var primaryCommands = new List<ICommandDefinition>();
+            var loadedComponents = ComponentLoader.Load(host, extPath, extPattern, conventions);
+
+            Run(args, pauseOnExit, app, primaryCommands, loadedComponents);
+        }
+
+        public static void Run(string[] args, bool pauseOnExit, Microsoft.Extensions.CommandLineUtils.CommandLineApplication app, List<ICommandDefinition> primaryCommands, IEnumerable<ICommandDefinition> loadedComponents)
+        {
             // add default commmands
-            if(!loadedCommands.Any(pc => pc.Name.Equals("version", StringComparison.InvariantCultureIgnoreCase)))
+            if (!loadedComponents.Any(pc => pc.Name.Equals("version", StringComparison.InvariantCultureIgnoreCase)))
             {
                 primaryCommands.Add(new VersionPrimaryCommand());
             }
 
-            primaryCommands.AddRange(loadedCommands);
+            primaryCommands.AddRange(loadedComponents);
 
             primaryCommands.ToList().ForEach(pc =>
             {
@@ -34,7 +51,7 @@ namespace Itofinity.Cli.Mef
 
             app.HelpOption("-? | -h | --help");
 
-            if(!args.Any())
+            if (!args.Any())
             {
                 args = new string[] { "--help" };
             }
@@ -44,7 +61,7 @@ namespace Itofinity.Cli.Mef
             {
                 result = app.Execute(args);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 result = app.Execute(new string[] { "--help" });
